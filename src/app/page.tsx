@@ -28,27 +28,30 @@ const features = [
   {
     title: "Smart Expense Classification",
     description: "AI-powered automatic categorization of your spending with unprecedented accuracy.",
-    icon: <PieChart className="h-8 w-8 md:h-10 md:w-10 text-emerald-600 dark:text-emerald-500" />,
-    className:
-      "col-span-1 md:col-span-2 bg-gradient-to-br from-emerald-50/80 to-emerald-100/80 dark:from-emerald-950/30 dark:to-emerald-900/30 hover:shadow-lg hover:translate-y-[-2px] transition-all duration-300",
+    icon: <PieChart className="h-8 w-8 md:h-10 md:w-10" />,
+    className: "col-span-1 md:col-span-2",
+    gradient: "from-emerald-500 to-teal-500",
   },
   {
     title: "AI Budget Advisor",
     description: "Personalized financial guidance through AI-powered conversational budget planning.",
-    icon: <MessageSquare className="h-8 w-8 md:h-10 md:w-10 text-teal-600 dark:text-teal-500" />,
-    className: "col-span-1 bg-gradient-to-br from-teal-50/80 to-teal-100/80 dark:from-teal-950/30 dark:to-teal-900/30 hover:shadow-lg hover:translate-y-[-2px] transition-all duration-300",
+    icon: <MessageSquare className="h-8 w-8 md:h-10 md:w-10" />,
+    className: "col-span-1",
+    gradient: "from-blue-500 to-indigo-500",
   },
   {
     title: "Financial Insights",
     description: "Deep analysis of your spending habits with personalized financial recommendations.",
-    icon: <BarChart3 className="h-8 w-8 md:h-10 md:w-10 text-cyan-600 dark:text-cyan-500" />,
-    className: "col-span-1 bg-gradient-to-br from-cyan-50/80 to-cyan-100/80 dark:from-cyan-950/30 dark:to-cyan-900/30 hover:shadow-lg hover:translate-y-[-2px] transition-all duration-300",
+    icon: <BarChart3 className="h-8 w-8 md:h-10 md:w-10" />,
+    className: "col-span-1",
+    gradient: "from-purple-500 to-pink-500",
   },
   {
     title: "Real-time Expense Tracking",
     description: "Instant transaction monitoring and comprehensive financial dashboard.",
-    icon: <TrendingUp className="h-8 w-8 md:h-10 md:w-10 text-green-600 dark:text-green-500" />,
-    className: "col-span-1 md:col-span-2 bg-gradient-to-br from-green-50/80 to-green-100/80 dark:from-green-950/30 dark:to-green-900/30 hover:shadow-lg hover:translate-y-[-2px] transition-all duration-300",
+    icon: <TrendingUp className="h-8 w-8 md:h-10 md:w-10" />,
+    className: "col-span-1 md:col-span-2",
+    gradient: "from-orange-500 to-red-500",
   },
 ]
 
@@ -96,7 +99,7 @@ export default function Page() {
       <AddToHomeButton />
 
       <main className="flex-grow">
-        {/* Hero Section */}
+        {/* Hero Section - UNCHANGED */}
         <section className="relative py-12 sm:py-16 lg:py-24 overflow-hidden">
           {/* Background Elements */}
           <div className="absolute inset-0 z-0 pointer-events-none">
@@ -177,58 +180,52 @@ export default function Page() {
           {/* Empty section for anchor navigation */}
         </section>
         
-        {/* Features Section */}
-        <section id="features" className="py-12 sm:py-16 lg:py-20 bg-background">
+        {/* Enhanced Features Section */}
+        <section id="features" className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-gray-50/50 via-white to-blue-50/30 dark:from-gray-900/50 dark:via-gray-900 dark:to-gray-800/50">
           <div className="container mx-auto px-4 max-w-7xl">
             <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
-              <div className="inline-flex items-center justify-center px-2 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 mb-3">
-                <span className="text-blue-800 dark:text-blue-400 text-xs font-medium">Key Features</span>
+              <div className="inline-flex items-center justify-center px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50 border border-blue-100 dark:border-blue-800/50 mb-4">
+                <span className="text-blue-800 dark:text-blue-300 text-xs font-medium">Key Features</span>
               </div>
               
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">Powerful Features</h2>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-3">
+                Powerful Features for{" "}
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+                  Smart Finance Management
+                </span>
+              </h2>
               <p className="mt-3 text-sm sm:text-base text-muted-foreground">
-                Our AI-powered tools help you track, analyze, and optimize your personal finances.
+                Our AI-powered tools help you track, analyze, and optimize your personal finances with ease.
               </p>
             </div>
             
-            <BentoGrid className="max-w-5xl mx-auto grid-cols-1 sm:grid-cols-2 md:auto-rows-[16rem] lg:auto-rows-[18rem] gap-3 sm:gap-4">
+            <BentoGrid className="max-w-5xl mx-auto grid-cols-1 sm:grid-cols-2 md:auto-rows-[18rem] lg:auto-rows-[20rem] gap-4 sm:gap-6">
               {features.map((feature, i) => (
                 <BentoGridItem
                   key={i}
                   title={feature.title}
                   description={feature.description}
-                  className={feature.className}
-                  icon={feature.icon}
+                  className={`${feature.className} group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-800 hover:shadow-2xl hover:scale-[1.02] transition-all duration-500 rounded-2xl p-6`}
+                  icon={
+                    <div className={`relative p-3 bg-gradient-to-r ${feature.gradient} rounded-xl text-white shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110`}>
+                      {feature.icon}
+                      <div className="absolute inset-0 bg-white/20 rounded-xl group-hover:animate-pulse"></div>
+                    </div>
+                  }
                 />
               ))}
             </BentoGrid>
           </div>
         </section>
         
-        {/* CTA Section */}
-        <section className="py-12 sm:py-16 bg-gradient-to-br from-teal-500 to-green-500 dark:from-teal-900 dark:to-green-900">
-          <div className="container mx-auto px-4 text-center max-w-4xl">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-4">Ready to Take Control of Your Finances?</h2>
-            <p className="text-sm sm:text-base text-teal-50 mb-6 sm:mb-8 max-w-2xl mx-auto">
-              Join thousands of users who have improved their financial health with our AI-powered expense tracker.
-            </p>
-            
-            <Link href={isAuthenticated ? "/dashboard" : "/signup"}>
-              <Button className="bg-white hover:bg-gray-100 text-teal-600 px-5 py-2 sm:py-3 text-sm sm:text-base rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
-                {isAuthenticated ? "Go to Dashboard" : "Get Started Free"}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-        </section>
       </main>
       
-      {/* Footer */}
+      {/* Footer - UNCHANGED */}
       <footer className="bg-muted/30 border-t border-border py-8">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="col-span-2 md:col-span-1">
-              <h3 className="text-sm sm:text-base font-bold text-foreground mb-3">Expense Tracker</h3>
+                            <h3 className="text-sm sm:text-base font-bold text-foreground mb-3">Expense Tracker</h3>
               <p className="text-xs sm:text-sm text-muted-foreground">Take control of your finances with our AI-powered tools and insights.</p>
             </div>
             
@@ -262,7 +259,7 @@ export default function Page() {
             </div>
           </div>
           
-                    <div className="border-t border-border mt-6 pt-6 flex flex-col md:flex-row justify-between items-center">
+          <div className="border-t border-border mt-6 pt-6 flex flex-col md:flex-row justify-between items-center">
             <p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} Expense Tracker. All rights reserved.</p>
             
             <div className="flex space-x-4 mt-4 md:mt-0">
