@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "Expense Tracker",
   },
-  applicationName: "Expense Tracker",
+  applicationName: "AI POWERED Expense Tracker",
   openGraph: {
     type: "website",
     locale: "en_US",

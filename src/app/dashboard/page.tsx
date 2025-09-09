@@ -26,6 +26,7 @@ import { BudgetProgress } from '@/components/dashboard/BudgetProgress';
 import { RecentTransactions } from '@/components/dashboard/RecentTransactions';
 import { ExpenseTrends } from '@/components/dashboard/ExpenseTrends';
 import { TransactionDistribution } from '@/components/dashboard/TransactionDistribution';
+import { InsightsCard } from '@/components/dashboard/InsightsCard';
 
 export interface AuthState {
   status: boolean;
@@ -528,24 +529,25 @@ function DashboardPage() {
       
       {/* Area Chart and Doughnut Chart Row */}
       {filteredTransactions.length > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-          {/* Area Chart */}
-          <ExpenseTrends
-            areaChartData={areaChartData}
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-            monthNames={monthNames}
-          />
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+    {/* Area Chart */}
+    <ExpenseTrends
+      areaChartData={areaChartData}
+      selectedMonth={selectedMonth}
+      selectedYear={selectedYear}
+      monthNames={monthNames}
+    />
 
-          {/* Original Chart with Labels */}
-          <TransactionDistribution
-            filteredTransactions={filteredTransactions}
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-            monthNames={monthNames}
-          />
-        </div>
-      )}
+    {/* Insights Card */}
+    <InsightsCard
+      filteredTransactions={filteredTransactions}
+      selectedMonth={selectedMonth}
+      selectedYear={selectedYear}
+      monthNames={monthNames}
+    />
+  </div>
+)}
+
 
       {/* No Data State for Selected Month */}
       {filteredTransactions.length === 0 && transactions.length > 0 && (
@@ -579,33 +581,6 @@ function DashboardPage() {
         </div>
       )}
 
-      {/* Quick Actions Footer - Only show if there are transactions for selected month */}
-      {filteredTransactions.length > 0 && (
-        <div className="mt-8 bg-card border border-border rounded-xl p-5 shadow-sm">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="mb-4 md:mb-0">
-              <h3 className="font-medium text-foreground">
-                Managing your finances for {monthNames[selectedMonth - 1]} {selectedYear}
-              </h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                Keep adding transactions and managing budgets for better financial insights.
-              </p>
-            </div>
-            <div className="flex gap-4">
-              <Link href="/add-transaction">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm">
-                  Add Transaction
-                </Button>
-              </Link>
-              <Link href="/budget">
-                <Button variant="outline" className="border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50">
-                  Manage Budgets
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

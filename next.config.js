@@ -1,30 +1,36 @@
 /** @type {import('next').NextConfig} */
-const withPWA = require('next-pwa')({
-  dest: 'public',
+const withPWA = require("next-pwa")({
+  dest: "public",
   register: true,
   skipWaiting: true,
+  disable: process.env.NODE_ENV === "development", // 👈 disable PWA in dev
 });
 
 const nextConfig = {
   // Bundle optimization
   experimental: {
     optimizePackageImports: [
-      'lucide-react',
-      '@nextui-org/react',
-      'chart.js',
-      'react-chartjs-2'
+      "lucide-react",
+      "@nextui-org/react",
+      "chart.js",
+      "react-chartjs-2",
     ],
   },
-  
+
   // Compiler optimizations
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    removeConsole: process.env.NODE_ENV === "development",
   },
 
   // Image optimization
   images: {
-    domains: ['expense-tracker-sujaltlrj.vercel.app'],
-    formats: ['image/webp', 'image/avif'],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "expense-tracker-sujaltlrj.vercel.app",
+      },
+    ],
+    formats: ["image/webp", "image/avif"],
   },
 
   // Webpack optimizations
@@ -40,7 +46,7 @@ const nextConfig = {
     // Bundle analyzer in development
     if (dev && !isServer) {
       config.optimization.splitChunks = {
-        chunks: 'all',
+        chunks: "all",
         cacheGroups: {
           default: {
             minChunks: 2,
@@ -49,15 +55,15 @@ const nextConfig = {
           },
           vendor: {
             test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
+            name: "vendors",
             priority: -10,
-            chunks: 'all',
+            chunks: "all",
           },
           charts: {
             test: /[\\/]node_modules[\\/](chart\.js|react-chartjs-2)[\\/]/,
-            name: 'charts',
+            name: "charts",
             priority: 10,
-            chunks: 'all',
+            chunks: "all",
           },
         },
       };
