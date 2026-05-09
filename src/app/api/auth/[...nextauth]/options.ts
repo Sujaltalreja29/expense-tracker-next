@@ -41,9 +41,9 @@ export const authOptions: NextAuthOptions = {
 
         const { email, password } = credentials as Credentials;
 
-        await dbConnect();
-
         try {
+          await dbConnect();
+
           const user = await UserModel.findOne({
             $or: [{ email: email }, { username: email }],
           }) as Usertype | null;

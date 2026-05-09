@@ -1,30 +1,48 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 type ConnectionObject = {
-    isConnected?: number;
+  isConnected?: number;
 };
 
 const connection: ConnectionObject = {};
 
+declare global {
+  // eslint-disable-next-line no-var
+  var mongooseCache:
+    | {
+        conn: typeof mongoose | null;
+        promise: Promise<typeof mongoose> | null;
+      }
+    | undefined;
+}
+
 async function dbConnect(): Promise<void> {
-    // Check if we have a connection to the database or if it's currently connecting
-    if (connection.isConnected) {
-      console.log('Already connected to the database');
-      return;
-    }
+  if (connection.isConnected) {
+    return;
+  }
+
+  const mongoUri = process.env.MONGODB_URI;
+
+  if (!mongoUri) {
+    throw new Error("MONGODB_URI is not defined in environment variables");
+  }
 
   try {
-    // Attempt to connect to the database
-    const db = await mongoose.connect(process.env.MONGODB_URI as string);
+    if (!global.mongooseCache) {
+      global.mongooseCache = { conn: null, promise: null };
+    }
+
+    if (!global.mongooseCache.promise) {
+      global.mongooseCache.promise = mongoose.connect(mongoUri);
+    }
+
+    const db = await global.mongooseCache.promise;
+    global.mongooseCache.conn = db;
 
     connection.isConnected = db.connections[0].readyState;
-
-    console.log('Database connected successfully');
   } catch (error) {
-    console.error('Database connection failed:', error);
-
-    // Graceful exit in case of a connection error
-    process.exit(1);
+    global.mongooseCache = { conn: null, promise: null };
+    throw error;
   }
 }
 

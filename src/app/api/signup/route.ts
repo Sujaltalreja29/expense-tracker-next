@@ -3,9 +3,9 @@ import UserModel from '@/models/model';
 import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
-  await dbConnect();
-  console.log("DB connected");
   try {
+    await dbConnect();
+
     const { username, email, password } = await request.json();
 
     const user = await UserModel.findOne({
@@ -51,11 +51,10 @@ export async function POST(request: Request) {
       );
     } 
   } catch (error) {
-    console.error('Error registering user:', error);
     return Response.json(
       {
         success: false,
-        message: 'Error registering user',
+        message: 'Error registering user. Please verify MongoDB URI and credentials.',
       },
       { status: 500 }
     );
