@@ -8,6 +8,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Coins, DollarSign, Loader2, ListPlus, Receipt, Tag, Calendar } from "lucide-react";
 import { useSelector } from "react-redux";
+import { getSession } from 'next-auth/react';
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { PREDEFINED_CATEGORIES } from "@/models/model";
@@ -57,8 +58,17 @@ function AddTransactionPage() {
     setIsSubmitting(true);
     
     try {
-      const storedSession = localStorage.getItem('session');
-      if (!storedSession) {
+      // Prefer Redux store for user data; fallback to NextAuth session if missing
+      let user = userData?.user;
+      if (!user) {
+        const session = await getSession();
+        if (session?.user) {
+          // @ts-ignore
+          user = session.user;
+        }
+      }
+
+      if (!user) {
         toast({
           title: "Error",
           description: "Please login to continue",
@@ -66,18 +76,41 @@ function AddTransactionPage() {
         });
         return;
       }
-      
-      const { user } = JSON.parse(storedSession);
+
       const color = getCategoryColor(data.type);
-      
+
+      // Client-side validation
+      const parsedAmount = parseFloat(data.amount as unknown as string);
+      if (Number.isNaN(parsedAmount) || !isFinite(parsedAmount)) {
+        toast({ title: 'Invalid amount', description: 'Please enter a valid number for amount', variant: 'destructive' });
+        setIsSubmitting(false);
+        return;
+      }
+
+      const AMOUNT_MIN = 0.01;
+      const AMOUNT_MAX = 10000000;
+      if (parsedAmount < AMOUNT_MIN || parsedAmount > AMOUNT_MAX) {
+        toast({ title: 'Invalid amount', description: `Amount must be between ${AMOUNT_MIN} and ${AMOUNT_MAX}`, variant: 'destructive' });
+        setIsSubmitting(false);
+        return;
+      }
+
+      const safeAmount = Math.round(parsedAmount * 100) / 100;
+
+      if (!data.name || data.name.trim().length === 0 || data.name.trim().length > 200) {
+        toast({ title: 'Invalid name', description: 'Please provide a valid name (1-200 characters)', variant: 'destructive' });
+        setIsSubmitting(false);
+        return;
+      }
+
       const transaction = {
-        name: data.name,
+        name: data.name.trim(),
         type: data.type,
-        amount: parseFloat(data.amount),
+        amount: safeAmount,
         description: data.description || "",
         color,
         user: user._id,
-        date: data.date // Add this line
+        date: data.date,
       };
 
       const response = await axios.post("/api/create-transaction", transaction);

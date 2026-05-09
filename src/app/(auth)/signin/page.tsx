@@ -62,10 +62,7 @@ export default function SignInForm() {
           variant: 'default',
         });
 
-        const session = await getSession();
-        if (session) {
-          localStorage.setItem('session', JSON.stringify(session));
-        }
+        // session is managed by NextAuth; avoid storing it in localStorage
 
         router.replace('/');
         router.refresh();
@@ -103,11 +100,7 @@ export default function SignInForm() {
           variant: 'default',
         });
         
-        // Get session and store it
-        const session = await getSession();
-        if (session) {
-          localStorage.setItem('session', JSON.stringify(session));
-        }
+        // session is managed by NextAuth; avoid storing it in localStorage
         
         router.replace('/');
         router.refresh();

@@ -12,9 +12,6 @@ export default function SignOutButton() {
 
   const handleSignOut = async () => {
     try {
-      // Clear localStorage
-      localStorage.removeItem('session');
-      
       // Sign out with NextAuth
       await signOut({
         redirect: false,

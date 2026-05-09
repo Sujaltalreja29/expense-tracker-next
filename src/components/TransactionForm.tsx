@@ -26,14 +26,35 @@ export default function Transactions() {
             color = '#90ee90';
         }
 
-        const send = {
-            name: data.name,
-            type: data.type,
-            amount: parseFloat(data.amount), // Convert amount to a number for better handling
-            color,
-        };
+            // Client-side validation
+            const parsedAmount = parseFloat(data.amount as unknown as string);
+            if (Number.isNaN(parsedAmount) || !isFinite(parsedAmount)) {
+                toast({ title: 'Invalid amount', description: 'Please enter a valid number for amount', variant: 'destructive' });
+                return;
+            }
 
-        await axios.post('/api/create-transaction', send);
+            const AMOUNT_MIN = 0.01;
+            const AMOUNT_MAX = 10000000;
+            if (parsedAmount < AMOUNT_MIN || parsedAmount > AMOUNT_MAX) {
+                toast({ title: 'Invalid amount', description: `Amount must be between ${AMOUNT_MIN} and ${AMOUNT_MAX}`, variant: 'destructive' });
+                return;
+            }
+
+            const safeAmount = Math.round(parsedAmount * 100) / 100;
+
+            if (!data.name || data.name.trim().length === 0 || data.name.trim().length > 200) {
+                toast({ title: 'Invalid name', description: 'Please provide a valid name (1-200 characters)', variant: 'destructive' });
+                return;
+            }
+
+            const send = {
+                name: data.name.trim(),
+                type: data.type,
+                amount: safeAmount,
+                color,
+            };
+
+            await axios.post('/api/create-transaction', send);
 
         toast({
             title: 'Success',

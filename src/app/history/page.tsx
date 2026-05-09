@@ -12,6 +12,7 @@ import {
   Filter, 
   ListFilter, 
   Trash2,
+  Edit3,
   FileDown,
   ArrowDownUp
 } from 'lucide-react';
@@ -85,6 +86,10 @@ export default function TransactionsHistoryPage() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editAmount, setEditAmount] = useState('');
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
   const router = useRouter();
   const user = useSelector((state: { auth: AuthState }) => state.auth?.userData);
   const { theme } = useTheme();
@@ -653,15 +658,24 @@ export default function TransactionsHistoryPage() {
                         
                         <div>
                           <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="font-medium text-foreground">{transaction.name}</h3>
-                            {transaction.type === 'Income' ? (
-                              <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400 border border-green-200 dark:border-green-900">
-                                Income
-                              </Badge>
+                            {editingId === transaction._id ? (
+                              <div className="flex flex-col">
+                                <input value={editName} onChange={(e) => setEditName(e.target.value)} className="bg-background border-input rounded px-2 py-1 text-sm" />
+                                <input value={editAmount} onChange={(e) => setEditAmount(e.target.value)} className="bg-background border-input rounded px-2 py-1 text-sm mt-1" />
+                              </div>
                             ) : (
-                              <Badge variant="secondary" className="bg-accent border-border">
-                                {transaction.type}
-                              </Badge>
+                              <>
+                                <h3 className="font-medium text-foreground">{transaction.name}</h3>
+                                {transaction.type === 'Income' ? (
+                                  <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400 border border-green-200 dark:border-green-900">
+                                    Income
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="secondary" className="bg-accent border-border">
+                                    {transaction.type}
+                                  </Badge>
+                                )}
+                              </>
                             )}
                           </div>
                           
@@ -696,14 +710,61 @@ export default function TransactionsHistoryPage() {
                         </div>
                         
                         <div className="flex items-center">
-                          <button
-                            className="text-muted-foreground hover:text-red-500 dark:hover:text-red-400 transition-colors p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20"
-                            onClick={() => handleDelete(transaction._id, transaction.amount)}
-                            disabled={loading}
-                            aria-label="Delete transaction"
-                          >
-                            <Trash2 size={16} />
-                          </button>
+                          {editingId === transaction._id ? (
+                            <div className="flex items-center gap-2">
+                              <button
+                                className="px-3 py-1 bg-blue-600 text-white rounded"
+                                onClick={async () => {
+                                  if (isSavingEdit) return;
+                                  setIsSavingEdit(true);
+                                  try {
+                                    const payload: any = { id: transaction._id, name: editName, amount: editAmount };
+                                    if (user?.user?._id) payload.user = user.user._id;
+                                    const res = await axios.patch('/api/update-transaction', payload);
+                                    if (res.data?.success) {
+                                      // update local lists
+                                      const updated = res.data.data;
+                                      setTransactions(prev => prev.map(t => t._id === updated._id ? { ...t, ...updated } : t));
+                                      setFiltered(prev => prev.map(t => t._id === updated._id ? { ...t, ...updated } : t));
+                                      toast({ title: 'Updated', description: 'Transaction updated', variant: 'default' });
+                                      setEditingId(null);
+                                    } else {
+                                      toast({ title: 'Error', description: res.data?.message || 'Failed to update', variant: 'destructive' });
+                                    }
+                                  } catch (err) {
+                                    toast({ title: 'Error', description: 'Failed to update transaction', variant: 'destructive' });
+                                  } finally {
+                                    setIsSavingEdit(false);
+                                  }
+                                }}
+                              >
+                                Save
+                              </button>
+                              <button className="px-3 py-1 bg-gray-200 rounded" onClick={() => setEditingId(null)}>Cancel</button>
+                            </div>
+                          ) : (
+                            <>
+                              <button
+                                className="text-muted-foreground hover:text-red-500 dark:hover:text-red-400 transition-colors p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20"
+                                onClick={() => handleDelete(transaction._id, transaction.amount)}
+                                disabled={loading}
+                                aria-label="Delete transaction"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                              <button
+                                className="text-muted-foreground hover:text-foreground transition-colors p-2 rounded-full hover:bg-accent/40 ml-2"
+                                onClick={() => {
+                                  setEditingId(transaction._id);
+                                  setEditName(transaction.name);
+                                  setEditAmount(String(transaction.amount));
+                                }}
+                                aria-label="Edit transaction"
+                              >
+                                <Edit3 size={16} />
+                              </button>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>

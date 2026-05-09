@@ -61,26 +61,15 @@ export default function Page() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Check localStorage on component mount
-    const storedSession = localStorage.getItem('session');
-    if (storedSession) {
-      try {
-        const parsedSession = JSON.parse(storedSession);
-        dispatch(login(parsedSession));
-      } catch (error) {
-        console.error('Error parsing stored session:', error);
-        localStorage.removeItem('session');
-      }
-    }
+    // Do not read session from localStorage; rely on NextAuth and server-side session
   }, [dispatch]);
 
   useEffect(() => {
-    // Update localStorage when session changes
-  if (session?.user?._id) {
-    localStorage.setItem('session', JSON.stringify(session));
-    dispatch(login(session as AuthState["userData"]));
-  }
-}, [session, dispatch]);
+    // Sync NextAuth session to Redux; avoid persisting session to localStorage
+    if (session?.user?._id) {
+      dispatch(login(session as AuthState["userData"]));
+    }
+  }, [session, dispatch]);
 
   // Show loading state only on initial load when no local data is available
   if (status === 'loading' && !userStatus) {

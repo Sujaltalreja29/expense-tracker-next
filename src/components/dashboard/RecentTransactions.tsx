@@ -1,9 +1,14 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Clock } from 'lucide-react';
 import Link from 'next/link';
+import { Edit3, Save, X } from 'lucide-react';
+import axios from 'axios';
+import { useToast } from '@/hooks/use-toast';
+import { useSelector } from 'react-redux';
+import { useRouter } from 'next/navigation';
 
 interface Transaction {
   _id: string;
@@ -21,6 +26,7 @@ interface RecentTransactionsProps {
   selectedMonth: number;
   selectedYear: number;
   monthNames: string[];
+  onUpdate?: (updated: Transaction) => void;
 }
 
 export const RecentTransactions = memo(({
@@ -28,8 +34,17 @@ export const RecentTransactions = memo(({
   filteredTransactions,
   selectedMonth,
   selectedYear,
-  monthNames
+  monthNames,
+  onUpdate
 }: RecentTransactionsProps) => {
+  const { toast } = useToast();
+  const router = useRouter();
+  const userData = useSelector((state: any) => state.auth?.userData);
+  const userId = userData?.user?._id;
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editAmount, setEditAmount] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
   return (
     <Card className="shadow-md border border-border hover:shadow-lg transition-shadow duration-300">
       <CardHeader className="pb-2">
@@ -61,22 +76,69 @@ export const RecentTransactions = memo(({
                     />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-foreground">{transaction.name}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {new Date(transaction.date).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric'
-                      })}
-                    </p>
+                    {editingId === transaction._id ? (
+                      <div className="flex flex-col">
+                        <input value={editName} onChange={(e) => setEditName(e.target.value)} className="bg-background border-input rounded px-2 py-1 text-sm" />
+                        <input value={editAmount} onChange={(e) => setEditAmount(e.target.value)} className="bg-background border-input rounded px-2 py-1 text-sm mt-1" />
+                        <div className="flex gap-2 mt-2">
+                          <button onClick={async () => {
+                            if (isSaving) return;
+                            setIsSaving(true);
+                            try {
+                              const payload: any = { id: transaction._id, name: editName, amount: editAmount };
+                              if (userId) payload.user = userId;
+                              const res = await axios.patch('/api/update-transaction', payload);
+                                  if (res.data?.success) {
+                                    toast({ title: 'Updated', description: 'Transaction updated', variant: 'default' });
+                                    setEditingId(null);
+                                    const updatedTx = res.data.data;
+                                    if (onUpdate) onUpdate(updatedTx as Transaction);
+                                    else router.refresh();
+                                  } else {
+                                toast({ title: 'Error', description: res.data?.message || 'Failed to update', variant: 'destructive' });
+                              }
+                            } catch (err) {
+                              toast({ title: 'Error', description: 'Failed to update transaction', variant: 'destructive' });
+                            } finally {
+                              setIsSaving(false);
+                            }
+                          }} className="px-3 py-1 bg-blue-600 text-white rounded flex items-center gap-2">
+                            <Save className="w-4 h-4" /> Save
+                          </button>
+                          <button onClick={() => setEditingId(null)} className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded flex items-center gap-2">
+                            <X className="w-4 h-4" /> Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-sm font-medium text-foreground">{transaction.name}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {new Date(transaction.date).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </p>
+                      </>
+                    )}
                   </div>
                 </div>
-                <div className={`text-sm font-medium ${
-                  transaction.type === 'Income' 
-                    ? 'text-green-600 dark:text-green-400' 
-                    : 'text-red-600 dark:text-red-400'
-                }`}>
-                  {transaction.type === 'Income' ? '+' : '-'}₹{transaction.amount.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                <div className="flex items-center gap-3">
+                  <div className={`text-sm font-medium ${
+                    transaction.type === 'Income' 
+                      ? 'text-green-600 dark:text-green-400' 
+                      : 'text-red-600 dark:text-red-400'
+                  }`}>
+                    {transaction.type === 'Income' ? '+' : '-'}₹{transaction.amount.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                  </div>
+                  <button onClick={() => {
+                    setEditingId(transaction._id);
+                    setEditName(transaction.name);
+                    setEditAmount(String(transaction.amount));
+                  }} className="p-1 rounded hover:bg-accent/40">
+                    <Edit3 className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
             ))}

@@ -88,7 +88,7 @@ export default function NewNavbar() {
   const handleLogout = async () => {
     try {
       // Clear all local storage at once for better performance
-      const keysToRemove = ["session", "dashboardCache", "labelCache", "transactionCache"];
+      const keysToRemove = ["dashboardCache", "labelCache", "transactionCache"];
       keysToRemove.forEach(key => localStorage.removeItem(key));
       
       // Dispatch logout action

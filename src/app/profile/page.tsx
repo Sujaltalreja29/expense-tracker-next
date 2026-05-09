@@ -145,9 +145,8 @@ function ProfilePage() {
         };
         
         dispatch(login(updatedUserData));
-        
-        // Update localStorage
-        localStorage.setItem('session', JSON.stringify(updatedUserData));
+
+        // Do not store session in localStorage; NextAuth cookie handles session persistence
         
         setIsEditing(false);
         toast({

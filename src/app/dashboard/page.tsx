@@ -99,25 +99,9 @@ function DashboardPage() {
     return years;
   }, []);
 
-  // Add authentication setup from landing page
+  // Sync NextAuth session to Redux store; avoid persisting session in localStorage
   useEffect(() => {
-    // Check localStorage on component mount
-    const storedSession = localStorage.getItem('session');
-    if (storedSession) {
-      try {
-        const parsedSession = JSON.parse(storedSession);
-        dispatch(login(parsedSession));
-      } catch (error) {
-        console.error('Error parsing stored session:', error);
-        localStorage.removeItem('session');
-      }
-    }
-  }, [dispatch]);
-
-  useEffect(() => {
-    // Update localStorage when session changes
     if (session?.user?._id) {
-      localStorage.setItem('session', JSON.stringify(session));
       dispatch(login(session as AuthState["userData"]));
     }
   }, [session, dispatch]);
@@ -524,6 +508,9 @@ function DashboardPage() {
           selectedMonth={selectedMonth}
           selectedYear={selectedYear}
           monthNames={monthNames}
+          onUpdate={(updated) => {
+            setTransactions(prev => prev.map(t => t._id === updated._id ? { ...t, ...updated } : t));
+          }}
         />
       </div>
       
