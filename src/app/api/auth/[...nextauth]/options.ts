@@ -2,6 +2,7 @@ import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import bcrypt from 'bcryptjs';
+import { randomUUID } from 'node:crypto';
 import dbConnect from '@/lib/dbConnect';
 import UserModel, { Usertype } from '@/models/model';
 
@@ -20,6 +21,9 @@ interface ExtendedUser {
   spent?: number;
   isGoogleUser?: boolean;
 }
+
+const guestEmail = process.env.GUEST_EMAIL || 'guest@example.com';
+const guestUsername = process.env.GUEST_USERNAME || 'guest';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -77,6 +81,49 @@ export const authOptions: NextAuthOptions = {
           }
         } catch (err: any) {
           throw new Error(err.message || 'Authorization failed.');
+        }
+      },
+    }),
+    CredentialsProvider({
+      id: 'guest',
+      name: 'Guest',
+      credentials: {},
+      async authorize(): Promise<ExtendedUser | null> {
+        try {
+          await dbConnect();
+
+          let guest = await UserModel.findOne({ email: guestEmail }) as Usertype | null;
+
+          if (!guest) {
+            const usernameTaken = await UserModel.exists({ username: guestUsername });
+            const username = usernameTaken
+              ? `${guestUsername}-${randomUUID().slice(0, 8)}`
+              : guestUsername;
+
+            guest = await UserModel.create({
+              username,
+              email: guestEmail,
+              password: await bcrypt.hash(randomUUID(), 10),
+              budget: 0,
+              spent: 0,
+              isGoogleUser: false,
+            }) as Usertype;
+          }
+
+          const guestId = String(guest._id);
+
+          return {
+            id: guestId,
+            _id: guestId,
+            username: guest.username,
+            email: guest.email,
+            budget: guest.budget,
+            spent: guest.spent,
+            isGoogleUser: false,
+          };
+        } catch (error) {
+          console.error('Guest login failed:', error);
+          throw new Error('Guest login is unavailable because the database connection failed.');
         }
       },
     }),

@@ -32,7 +32,7 @@ import {
   Clock,
   Hammer
 } from 'lucide-react'
-import { PREDEFINED_CATEGORIES } from '@/models/model'
+import { PREDEFINED_CATEGORIES } from '@/constants/categories'
 import { Badge } from '@/components/ui/badge'
 import { useTheme } from 'next-themes'
 
@@ -85,6 +85,7 @@ export default function BudgetsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [budgetSummary, setBudgetSummary] = useState<BudgetSummary[]>([])
   const [showForm, setShowForm] = useState(false)
+  const [activeTab, setActiveTab] = useState('overview')
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const { theme } = useTheme()
   const [mounted, setMounted] = useState(false)
@@ -459,6 +460,7 @@ export default function BudgetsPage() {
           <Button
             onClick={() => {
               setShowForm(true);
+              setActiveTab('manage');
               reset({
                 category: "",
                 amount: "",
@@ -543,7 +545,7 @@ export default function BudgetsPage() {
       )}
 
       {/* Tabs Navigation */}
-      <Tabs defaultValue="overview" className="mb-8">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
         <TabsList className="grid grid-cols-2 w-full max-w-md mx-auto mb-6">
           <TabsTrigger value="overview">
             <BarChart3 className="w-4 h-4 mr-2" />
@@ -578,6 +580,7 @@ export default function BudgetsPage() {
                   <Button
                     onClick={() => {
                       setShowForm(true);
+                      setActiveTab('manage');
                       reset({
                         category: "",
                         amount: "",
@@ -1115,7 +1118,7 @@ export default function BudgetsPage() {
                         <div>
                           <span className="font-medium text-foreground">{category.category}</span>
                           <div className="text-xs text-muted-foreground mt-0.5">
-                            {Math.round(category.spent / totalSpent * 100)}% of total spending
+                            {totalSpent > 0 ? Math.round(category.spent / totalSpent * 100) : 0}% of total spending
                           </div>
                         </div>
                       </div>

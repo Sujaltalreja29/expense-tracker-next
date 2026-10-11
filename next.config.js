@@ -3,10 +3,12 @@ const withPWA = require("next-pwa")({
   dest: "public",
   register: true,
   skipWaiting: true,
-  disable: process.env.NODE_ENV === "development", // 👈 disable PWA in dev
+  disable: process.env.NODE_ENV === "development",
 });
 
 const nextConfig = {
+  productionBrowserSourceMaps: true, // 👈 ADD HERE
+
   // Bundle optimization
   experimental: {
     optimizePackageImports: [
@@ -35,7 +37,6 @@ const nextConfig = {
 
   // Webpack optimizations
   webpack: (config, { dev, isServer }) => {
-    // Chart.js optimization
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
@@ -43,7 +44,6 @@ const nextConfig = {
       };
     }
 
-    // Bundle analyzer in development
     if (dev && !isServer) {
       config.optimization.splitChunks = {
         chunks: "all",

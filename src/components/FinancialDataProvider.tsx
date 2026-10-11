@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import axios from 'axios'
 import { useSelector } from 'react-redux'
-import { PREDEFINED_CATEGORIES } from '@/models/model'
+import { PREDEFINED_CATEGORIES } from '@/constants/categories'
 
 // Define our data types
 // Update your Transaction interface to include the category property

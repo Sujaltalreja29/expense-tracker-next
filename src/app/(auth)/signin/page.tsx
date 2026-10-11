@@ -117,17 +117,36 @@ export default function SignInForm() {
   };
 
   const handleGuestLogin = () => {
-    const guestCredentials = {
-      identifier: 'one@gmail.com',
-      password: '123456',
-    };
+    setLoading(true);
 
-    form.setValue('identifier', guestCredentials.identifier);
-    form.setValue('password', guestCredentials.password);
-    
-    setTimeout(() => {
-      form.handleSubmit(onSubmit)();
-    }, 100);
+    signIn('guest', {
+      redirect: false,
+    }).then((result) => {
+      if (result?.error) {
+        toast({
+          title: 'Guest login failed',
+          description: result.error,
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      toast({
+        title: 'Guest login successful',
+        description: 'Redirecting to dashboard...',
+        variant: 'default',
+      });
+      router.replace('/');
+      router.refresh();
+    }).catch(() => {
+      toast({
+        title: 'Guest login failed',
+        description: 'Unable to connect to the authentication service.',
+        variant: 'destructive',
+      });
+    }).finally(() => {
+      setLoading(false);
+    });
   };
 
   return (

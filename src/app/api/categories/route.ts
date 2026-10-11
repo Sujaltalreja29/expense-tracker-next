@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PREDEFINED_CATEGORIES } from '@/models/model';
+import { PREDEFINED_CATEGORIES } from '@/constants/categories';
 
 export async function GET() {
   try {

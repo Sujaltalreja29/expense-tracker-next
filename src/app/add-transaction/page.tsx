@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import { getSession } from 'next-auth/react';
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { PREDEFINED_CATEGORIES } from "@/models/model";
+import { PREDEFINED_CATEGORIES } from "@/constants/categories";
 
 interface TransactionFormData {
   name: string;

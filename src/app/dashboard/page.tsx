@@ -8,7 +8,7 @@ import axios from 'axios';
 import { useTheme } from 'next-themes';
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { PREDEFINED_CATEGORIES } from '@/models/model';
+import { PREDEFINED_CATEGORIES } from '@/constants/categories';
 import { 
   RefreshCw, 
   AlertCircle,

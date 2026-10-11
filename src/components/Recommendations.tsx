@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Loader2, ArrowRight, AlertTriangle, TrendingUp, DollarSign, PiggyBank, ArrowUpRight, Calendar } from 'lucide-react'
 import Link from 'next/link'
 import { ReactNode } from 'react'
-import { PREDEFINED_CATEGORIES } from '@/models/model'
+import { PREDEFINED_CATEGORIES } from '@/constants/categories'
 import type { Transaction, Budget, CategorySummary } from './FinancialDataProvider'
 
 // Define interfaces for your data structures

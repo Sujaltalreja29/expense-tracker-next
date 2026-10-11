@@ -4,7 +4,7 @@ import { memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { TrendingUp } from 'lucide-react';
 import Link from 'next/link';
-import { PREDEFINED_CATEGORIES } from '@/models/model';
+import { PREDEFINED_CATEGORIES } from '@/constants/categories';
 
 interface BudgetItem {
   category: string;

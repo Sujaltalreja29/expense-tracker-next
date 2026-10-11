@@ -20,7 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useDispatch, useSelector } from 'react-redux';
 import { filterOptions } from '@/constants/filterOptions';
 import { login,updateUser } from '@/store/authSlice';
-import { PREDEFINED_CATEGORIES } from '@/models/model';
+import { PREDEFINED_CATEGORIES } from '@/constants/categories';
 import {
   Popover,
   PopoverContent,
