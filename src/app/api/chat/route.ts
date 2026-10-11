@@ -13,6 +13,7 @@ export async function POST(req: Request) {
     }
 
     const google = createGoogleGenerativeAI({ apiKey });
+    const modelId = process.env.GEMINI_MODEL ?? 'gemini-2.5-flash';
     const { messages } = await req.json();
 
     if (!Array.isArray(messages)) {
@@ -40,7 +41,7 @@ When analyzing expense data:
     }
 
     const result = streamText({
-      model: google('gemini-1.5-flash'),
+      model: google(modelId),
       system: systemPrompt,
       messages: userMessages,
       temperature: 0.3,
