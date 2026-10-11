@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     }
 
     const google = createGoogleGenerativeAI({ apiKey });
-    const modelId = process.env.GEMINI_MODEL ?? 'gemini-2.5-flash';
+    const modelId = process.env.GEMINI_MODEL ?? 'gemini-3.8-flash';
     const { messages } = await req.json();
 
     if (!Array.isArray(messages)) {

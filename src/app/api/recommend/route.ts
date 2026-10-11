@@ -8,7 +8,7 @@ const google = createGoogleGenerativeAI({
   apiKey
 });
 
-const modelId = process.env.GEMINI_MODEL ?? 'gemini-2.5-flash';
+const modelId = process.env.GEMINI_MODEL ?? 'gemini-3.8-flash';
 export const runtime = 'edge';
 
 export async function POST() {
