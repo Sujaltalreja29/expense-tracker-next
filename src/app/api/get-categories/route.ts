@@ -1,17 +1,17 @@
 import dbConnect from '@/lib/dbConnect';
 import {Categories} from '@/models/model';
 
-export async function GET() {
-  await dbConnect();
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
+export async function GET() {
   try {
+    await dbConnect();
     const categories = await Categories.find({});
-    // let filter = await data.map(v => Object.assign({}, { type: v.type, color: v.color }));
     return Response.json({
       success: true,
       data: categories,
-        },
-        { status: 200 });
+    }, { status: 200 });
   } catch (error) {
     console.error('Error getting categories:', error);
     return Response.json(
@@ -22,7 +22,3 @@ export async function GET() {
       { status: 500 })
   }
 }
-
-
-
-
