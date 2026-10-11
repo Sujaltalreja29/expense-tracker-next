@@ -48,7 +48,22 @@ When analyzing expense data:
       maxTokens: 800,
     });
 
-    return result.toDataStreamResponse();
+    return result.toDataStreamResponse({
+      getErrorMessage: (error) => {
+        console.error('Gemini stream error:', error);
+
+        const message = error instanceof Error ? error.message : '';
+        if (message.toLowerCase().includes('suspended')) {
+          return 'The Gemini API key is suspended. Create a new key and update the server environment variables.';
+        }
+
+        if (message.toLowerCase().includes('quota') || message.toLowerCase().includes('rate limit')) {
+          return 'The Gemini API quota or rate limit has been reached. Check the Google AI Studio project.';
+        }
+
+        return 'The Gemini API request failed. Check the server logs for details.';
+      },
+    });
   } catch (error) {
     console.error('Error handling chat request:', error);
     return new Response(JSON.stringify({
