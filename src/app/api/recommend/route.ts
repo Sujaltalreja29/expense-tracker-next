@@ -8,6 +8,7 @@ const google = createGoogleGenerativeAI({
   apiKey
 });
 
+const modelId = process.env.GEMINI_MODEL ?? 'gemini-2.5-flash';
 export const runtime = 'edge';
 
 export async function POST() {
@@ -16,7 +17,7 @@ export async function POST() {
       "Create a list of five Budget Recommendations formatted as a single string. Each recommendation should be separated by '||'. These recommendations are for users on an Expense Tracker Website.";
 
     const { text: answer } = await generateText({
-      model: google("gemini-1.5-flash"),
+      model: google(modelId),
       prompt,
     });
     return NextResponse.json({ answer }); // Return as string
